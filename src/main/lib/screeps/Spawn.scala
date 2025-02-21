@@ -1,4 +1,4 @@
-package screeps
+package screeps.types
 
 import scala.scalajs.js
 
@@ -41,7 +41,7 @@ trait Spawning extends js.Object {
 trait StructureSpawn extends OwnedStructureWithStorage {
 
   /** A shorthand to Memory.spawns[spawn.name]. You can use it for quick access the spawn’s specific memory data object.
-    * [[http://support.screeps.com/hc/en-us/articles/203016642-Working-with-memory Learn more about memory]]
+    * [[http://support.screeps.types.com/hc/en-us/articles/203016642-Working-with-memory Learn more about memory]]
     */
   val memory: js.Any = js.native
 
@@ -127,10 +127,25 @@ trait StructureSpawn extends OwnedStructureWithStorage {
   def renewCreep(target: Creep): Short = js.native
 }
 
+/**
+ * An object with additional options for the spawning process.
+ */
 @js.native
 trait SpawnOptions extends js.Object{
+  /**
+    * Memory of the new creep.
+    *
+    * If provided, it will be immediately stored into Memory.creeps[name].
+    */
   val memory: js.UndefOr[js.Object] = js.native
+  /**
+    * Array of spawns/extensions from which to draw energy for the spawning process.
+    *
+    * Structures will be used according to the array order.
+    */
   val energyStructures: js.UndefOr[js.Array[Either[StructureSpawn, StructureExtension]]] = js.native
+  /** If dryRun is `true`, the operation will only check if it is possible to create a creep. */
   val dryRun: Option[Boolean] = js.native
+  /** Set allowed directions the creep can move when spawned. */
   val directions: Short = js.native
 }

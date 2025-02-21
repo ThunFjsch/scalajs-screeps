@@ -1,6 +1,6 @@
 package tutorial.webapp
 
-import screeps._
+import screeps.types._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
