@@ -1,4 +1,4 @@
-package screeps
+package screepsTypes
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._

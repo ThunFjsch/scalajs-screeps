@@ -1,12 +1,12 @@
 package tutorial.webapp
 
-import screeps.types._
+import screepsTypes._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.scalajs.js.Dynamic.{global => g}
 
-object screepsBot {
+object screeps {
   def main(args: Array[String]): Unit = {
     loop
   }
@@ -23,14 +23,14 @@ object screepsBot {
 
     Game.creeps.values.map( creep => {
       creep.memory.role.asInstanceOf[String] match {
-        case "miner" => harvester(creep)
-        // case "upgrader"  => upgrader(creep)
+        case "harvester" => harvester(creep)
+        case "upgrader"  => upgrader(creep)
         case "builder"   => builder(creep)
         case unknown     => g.console.log("unknown role: " + unknown)
       }
     })
 
-    Game.structures.values.filter(_.structureType == StructureType.Tower.toString).map(_.asInstanceOf[StructureTower]).foreach(tower)
+    Game.structures.values.filter(_.structureType == StructureConstant.Tower.toString).map(_.asInstanceOf[StructureTower]).foreach(tower)
   }
 
   def numOfHarvesters(creeps: Iterable[Creep]) =
@@ -44,21 +44,24 @@ object screepsBot {
   }
 
   def harvester(creep: Creep) = {
-    if (creep.carry("energy") < creep.carryCapacity) {
+    g.console.log(creep.carryCapacity)
+    g.console.log(creep.store.getUsedCapacity("energy"))
+    if (creep.store.getUsedCapacity("energy") < creep.carryCapacity) {
+      g.console.log("gees luise")
       harvest(creep)
     } else {
       val opts = new js.Object {
         def filter(structure:Structure): Boolean = {
-          return (structure.structureType == StructureType.Extension.toString ||
-            structure.structureType == StructureType.Spawn.toString ||
-            structure.structureType == StructureType.Tower.toString ) && (
-            structure.asInstanceOf[OwnedStructureWithEnergy].energy < structure.asInstanceOf[OwnedStructureWithEnergy].energyCapacity)
+          return (structure.structureType == StructureConstant.Extension.toString ||
+            structure.structureType == StructureConstant.Spawn.toString ||
+            structure.structureType == StructureConstant.Tower.toString ) && (
+            structure.asInstanceOf[OwnedStructureWithStorage].energy < structure.asInstanceOf[OwnedStructureWithStorage].energyCapacity)
         }
       }.asInstanceOf[js.Object]
       val targets = creep.room.find(FindType.Structures.id, opts).asInstanceOf[js.Array[Structure]]
       targets.headOption.foreach{ target =>
         if(creep.transfer(target, ResourceType.Energy.toString) == Errors.NotInRange.id ) {
-          creep.moveTo(target.pos)
+          creep.moveToPosition(target.pos)
         }
       }
     }
@@ -66,30 +69,32 @@ object screepsBot {
 
   def harvest(creep:Creep) = {
     val sources = creep.room.find(FindType.Sources.id).asInstanceOf[js.Array[Source]]
+    g.console.log(sources.head)
+    g.console.log(creep.harvest(sources.head))
     if (creep.harvest(sources.head) == Errors.NotInRange.id) {
-      creep.moveTo(sources(0).pos)
+      creep.moveToPosition(sources(0).pos)
     }
   }
 
-  // def upgrader(creep: Creep) = {
-  //   if (creep.carry("energy") == 0) {
-  //     harvest(creep)
-  //   } else {
-  //     if(creep.upgradeController(creep.room.controller) == Errors.NotInRange.id) {
-  //       creep.moveTo(creep.room.controller.POS)
-  //     }
-  //   }
-  // }
+  def upgrader(creep: Creep) = {
+    if (creep.store.getCapacity("energy") == 0) {
+      harvest(creep)
+    } else {
+      if(creep.upgradeController(creep.room.controller) == Errors.NotInRange.id) {
+        creep.moveToPosition(creep.room.controller.pos)
+      }
+    }
+  }
 
   def builder(creep: Creep) = {
     if (js.isUndefined(creep.memory.building))
       creep.memory.building = false
 
-    if (creep.memory.building.asInstanceOf[Boolean] && creep.carry("energy") == 0) {
+    if (creep.memory.building.asInstanceOf[Boolean] && creep.store.getCapacity("energy") == 0) {
       creep.memory.building = false
       creep.say("harvesting")
     }
-    if (!creep.memory.building.asInstanceOf[Boolean] && creep.carry("energy") == creep.carryCapacity) {
+    if (!creep.memory.building.asInstanceOf[Boolean] && creep.store.getCapacity("energy") == creep.carryCapacity) {
       creep.memory.building = true
       creep.say("building")
     }
@@ -97,7 +102,7 @@ object screepsBot {
     if (creep.memory.building.asInstanceOf[Boolean]) {
       creep.room.find(FindType.ConstructionSites.id).asInstanceOf[js.Array[ConstructionSite]].headOption.foreach { site =>
         if (creep.build(site) == Errors.NotInRange.id) {
-          creep.moveTo(site.pos)
+          creep.moveToPosition(site.pos)
         }
       }
     } else {

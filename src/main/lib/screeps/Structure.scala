@@ -1,4 +1,4 @@
-package screeps.types
+package screepsTypes
 
 import scala.scalajs.js
 

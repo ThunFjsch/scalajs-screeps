@@ -1,7 +1,16 @@
-package screeps
+package screepsTypes
 
 import scala.scalajs.js
 
+/**
+ * A site of a structure which is currently under construction.
+ *
+ * A construction site can be created using the 'Construct' button at the left of the game field or the {@link Room.createConstructionSite} method.
+ *
+ * To build a structure on the construction site, give a worker creep some amount of energy and perform {@link Creep.build} action.
+ *
+ * You can remove enemy construction sites by moving a creep on it.
+ */
 @js.native
 trait ConstructionSite extends RoomObject {
 

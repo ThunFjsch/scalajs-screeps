@@ -1,6 +1,7 @@
-package screeps
+package screepsTypes
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation._ 
 
 /**
   * An object representing the specified position in the room. Every object in
@@ -13,9 +14,9 @@ trait RoomPosition extends js.Object {
   /** The name of the room. */
   val roomName: String = js.native
   /** X position in the room */
-  val x: Int
+  val x: Int = js.native
   /** Y position in the room */
-  val y: Int
+  val y: Int = js.native
 
   /**
     * Create new ConstructionSite at the specified location.
@@ -28,8 +29,8 @@ trait RoomPosition extends js.Object {
     *         RCLNotEnough - The Room Controller Level is not enough. Learn more
     * @note CPU Cost: CONST
     */
-  def createConstructionSite(structureType: String): Short = js.native
-
+  def createConstructionSite(structureType: BuildableStructureConstant.type): Int = js.native
+  def creeateConstructionSite(structreType: BuildableStructureConstant.type, name: Option[String] = None): Int = js.native
   /**
     * Create new Flag at the specified location.
     * @param name (optional) The name of a new flag. It should be unique, i.e. the Game.flags object should not contain
@@ -41,7 +42,7 @@ trait RoomPosition extends js.Object {
     *         InvalidArgs - The location or the color constant is incorrect.
     * @note CPU Cost: CONST
     */
-  def createFlag(name: String = "", color: Int = Color.White.id, secondaryColor: Int = Color.White.id): js.Any = js.native
+  def createFlag(name: Option[String], color: Int = Color.White.id, secondaryColor: Int = Color.White.id): js.UndefOr[Short] = js.native
 
   /**
     * Find an object with the shortest path from the given position. Uses
@@ -88,9 +89,26 @@ trait RoomPosition extends js.Object {
     *         ];
     *         var closest = creep.pos.findClosestByPath(targets);}}}
     */
-  // TODO: Flesh out the opts type
+  // TODO: Flesh out opts type
+  /** from the ts types
+    findClosestByPath<K extends FindConstant, S extends FindTypes[K]>(
+        type: K,
+        opts?: FindPathOpts & FilterOptions<FindTypes[K], S> & { algorithm?: FindClosestByPathAlgorithm },
+    ): S | null;
+    findClosestByPath<S extends AnyStructure>(
+        type: FIND_STRUCTURES | FIND_MY_STRUCTURES | FIND_HOSTILE_STRUCTURES,
+        opts?: FindPathOpts & FilterOptions<FindTypes[FIND_STRUCTURES], S> & { algorithm?: FindClosestByPathAlgorithm },
+    ): S | null;
+    findClosestByPath<T extends _HasRoomPosition | RoomPosition, S extends T = T>(
+        objects: T[],
+        opts?: FindPathOpts &
+            FilterOptions<T, S> & {
+                algorithm?: FindClosestByPathAlgorithm;
+            },
+    ): S | null;
+  */
   def findClosestByPath(findType: Int, opts: js.Object = ???): js.Object = js.native
-
+  
   /**
     * Find an object with the shortest path from the given position. Uses
     * <a href="http://en.wikipedia.org/wiki/A*_search_algorithm">A* search algorithm</a> and

@@ -1,8 +1,14 @@
-package screeps
-
+package screepsTypes
 
 object Direction extends Enumeration {
   val Top, TopRight, Right, BottomRight, Bottom, BottomLeft, Left, TopLeft = Value
+}
+
+object BodyPartConstant extends Enumeration {
+  val Move = Value("move")
+  val Work = Value("work")
+  val Carry = Value("carry")
+  val Attack = Value("attack")
 }
 
 object Errors extends Enumeration {
@@ -30,26 +36,48 @@ object GameMode extends Enumeration {
   val Arena      = Value("arena")
 }
 
-object StructureType extends Enumeration {
-  val Spawn      = Value("spawn")
+object BuildableStructureConstant extends Enumeration {
   val Extension  = Value("extension")
-  val Road       = Value("road")
-  val Wall       = Value("constructedWall")
   val Rampart    = Value("rampart")
-  val KeeperLair = Value("keeperLair")
-  val Portal     = Value("portal")
-  val Controller = Value("controller")
+  val Road       = Value("road")
+  val Spawn      = Value("spawn")
   val Link       = Value("link")
+  val Wall       = Value("constructedWall")
   val Storage    = Value("storage")
   val Tower      = Value("tower")
   val Observer   = Value("observer")
-  val PowerBank  = Value("powerBank")
   val PowerSpawn = Value("powerSpawn")
   val Extractor  = Value("extractor")
   val Lab        = Value("lab")
   val Terminal   = Value("terminal")
   val Container  = Value("container")
   val Nuker      = Value("nuker")
+  val Factory    = Value("factory")
+}
+
+object StructureConstant extends Enumeration{
+  val KeeperLair = Value("keeperLair")
+  val Controller = Value("controller")
+  val PowerBank = Value("powerBank")
+  val Portal = Value("portal")
+  val InvaderCore = Value("invaderCore")
+  // TODO: How to not copy but extend BuildableStructureConstant
+  val Extension  = Value("extension")
+  val Rampart    = Value("rampart")
+  val Road       = Value("road")
+  val Spawn      = Value("spawn")
+  val Link       = Value("link")
+  val Wall       = Value("constructedWall")
+  val Storage    = Value("storage")
+  val Tower      = Value("tower")
+  val Observer   = Value("observer")
+  val PowerSpawn = Value("powerSpawn")
+  val Extractor  = Value("extractor")
+  val Lab        = Value("lab")
+  val Terminal   = Value("terminal")
+  val Container  = Value("container")
+  val Nuker      = Value("nuker")
+  val Factory    = Value("factory")
 }
 
 object Color extends Enumeration(1) {
@@ -88,6 +116,12 @@ object FindType extends Enumeration {
   val HostileConstructionSites = Value(115, "HOSTILE_CONSTRUCTION_SITES")
   val Minerals                 = Value(116, "MINERALS")
   val Nukes                    = Value(117, "NUKES")
+  val Tombstones               = Value(118, "TOMBSTONES")
+  val PowerCreeps              = Value(119, "POWER_CREEPS")
+  val MyPowerCreeps            = Value(120, "MY_POWER_CREEPS")
+  val HostilePowerCreeps       = Value(121, "HOSTILE_POWER_CREEPS")
+  val Deposits                 = Value(122, "DEPOSITS")
+  val Ruins                    = Value(123, "RUINS")
 }
 
 object LookType extends Enumeration {
@@ -106,19 +140,25 @@ object LookType extends Enumeration {
 object ResourceType extends Enumeration {
   val Energy = Value("energy")
   val Power = Value("power")
+  val OPS = Value("ops")
 
-  val Hydrogen = Value("H")
-  val Oxygen = Value("O")
+  val Biomass = Value("biomass")
+  val Metal = Value("metal")
+  val Mist = Value("mist")
+  val Silicon = Value("silicon")
+
   val Utrium = Value("U")
   val Lemergium = Value("L")
   val Keanium = Value("K")
   val Zynthium = Value("Z")
+  val Oxygen = Value("O")
+  val Hydrogen = Value("H")
   val Catalyst = Value("X")
-  val Ghodium = Value("G")
-
+ 
   val Hydroxie = Value("OH")
   val ZynthiumKeanite = Value("ZK")
   val UtriumLemergite = Value("UL")
+  val Ghodium = Value("G")
 
   val UtriumHydride = Value("UH")
   val UtriumOxide = Value("UO")
@@ -153,4 +193,59 @@ object ResourceType extends Enumeration {
   val CatalyzedGhodiumAcid = Value("XGH2O")
   val CatalyzedGhodiumAlkalide = Value("XGHO2")
 
+  val UtriumBar = Value("utrium_bar")
+  val LenrgiumBar = Value("lemergium_bar")
+  val ZynthiumBar = Value("zynthium_bar")
+  val KeaniumBar = Value("keanium_bar")
+  val GhodiumMelt = Value("ghodium_melt")
+  val Oxidant = Value("oxidant")
+  val Reductant = Value("reductant")
+  val Purifier = Value("purifier")
+  val Battery = Value("battery")
+
+  val Composite = Value("composite")
+  val Crystal = Value("crystal")
+  val Liquid = Value("liquid")
+
+  val Wire = Value("wire")
+  val Switch = Value("switch")
+  val Transistor = Value("transistor")
+  val Microchip = Value("microchip")
+  val Circuit = Value("circuit")
+  val Device = Value("device")
+
+  val Cell = Value("cell")
+  val Phlegm = Value("phlegm")
+  val Tissue = Value("tissue")
+  val Muscle = Value("muscle")
+  val Organoid = Value("organoid")
+  val Organism = Value("organism")
+
+  val Alloy = Value("alloy")
+  val Tube = Value("tube")
+  val Fixtures = Value("fixtures")
+  val Frame = Value("frame")
+  val Hydralics = Value("hydralics")
+  val Machine = Value("machine")
+
+  val Condensate = Value("condensate")
+  val Concentrate = Value("concentrate")
+  val Extract = Value("extract")
+  val Spirit = Value("spirit")
+  val Emanation = Value("emanation")
+  val Essense = Value("essence")
+}
+
+object DensityConstant extends Enumeration{
+  val Low = Value(1)
+  val Mid = Value(2)
+  val High = Value(3)
+  val Ultra = Value(4)
+}
+
+object InterShardResourceConstant extends Enumeration{
+  val SubscriptionToken = Value("token")
+  val CpuUnlock = Value("cpuUnlock")
+  val Pixel = Value("pixel") 
+  val AccessKey = Value("access")
 }

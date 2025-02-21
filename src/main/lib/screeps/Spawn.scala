@@ -1,4 +1,4 @@
-package screeps.types
+package screepsTypes
 
 import scala.scalajs.js
 
@@ -41,7 +41,7 @@ trait Spawning extends js.Object {
 trait StructureSpawn extends OwnedStructureWithStorage {
 
   /** A shorthand to Memory.spawns[spawn.name]. You can use it for quick access the spawn’s specific memory data object.
-    * [[http://support.screeps.types.com/hc/en-us/articles/203016642-Working-with-memory Learn more about memory]]
+    * [[http://support.screepsTypes.com/hc/en-us/articles/203016642-Working-with-memory Learn more about memory]]
     */
   val memory: js.Any = js.native
 

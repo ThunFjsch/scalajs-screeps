@@ -1,13 +1,14 @@
-package screeps
+package screepsTypes
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation._
+import scala.scalajs.js.|
 
 @js.native
 trait BodyPart extends js.Object{
   /**
     * If the body part is boosted, this property specifies the mineral type which is used for boosting.
-    * One of the RESOURCE_* constants. [[http://support.screeps.com/hc/en-us/articles/207891075 Learn more]]
+    * One of the RESOURCE_* constants. [[http://support.screepsTypes.com/hc/en-us/articles/207891075 Learn more]]
     */
   val boost: Int = js.native
 
@@ -45,13 +46,7 @@ trait BodyPart extends js.Object{
 trait Creep extends RoomObject {
   /** An array describing the creep’s body. */
   val body: js.Array[BodyPart] = js.native
-
-  /**
-    * An object with the creep's cargo contents. Each object key is one of the RESOURCE_* constants,
-    * values are resources amounts. Use lodash.sum to get the total amount of contents.
-    */
-  val carry: js.Dictionary[Int] = js.native
-
+  
   /** The total amount of resources the creep can carry */
   val carryCapacity: Int = js.native
 
@@ -86,8 +81,19 @@ trait Creep extends RoomObject {
   /** The creep’s owner information */
   val owner: Owner = js.native
 
+  /** The room the creep is in
+      Always defined because creeps give visibility into the room they are in
+  */
+  override val room: Room = js.native
+
   /** Whether this creep is still being spawned. */
   val spawning: Boolean = js.native
+
+  /** The text message that the creep was saying at the last tick*/ 
+  val saying: String = js.native
+
+  /** A Store object that contains cargo of this creep*/
+  val store: Store[false] = js.native
 
   /** The remaining amount of game ticks after which the creep will die. */
   val ticksToLive: Int = js.native
@@ -107,24 +113,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are no ATTACK body parts in this creep’s body.
     * @note CPU Cost: CONST
     */
-  def attack(target: Creep): Int = js.native
-
-  /**
-    * Attack another creep or structure in a short-ranged attack. Requires the ATTACK body part. If the target is
-    * inside a rampart, then the rampart is attacked instead. The target has to be at adjacent square to the creep.
-    * If the target is a creep with ATTACK body parts and is not inside a rampart, it will automatically hit
-    * back at the attacker.
-    * @param target The target of the attack
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         InvalidTarget - The target is not a valid attackable object.
-    *         NotInRange - The target is too far away.
-    *         NoBodypart - There are no ATTACK body parts in this creep’s body.
-    * @note CPU Cost: CONST
-    */
-  def attack(target: Structure): Int = js.native
+  def attack(target: Either[Creep, Structure]): Int = js.native
 
   /**
     * Decreases the controller's downgrade or reservation timer for 1 tick per every 5 CLAIM body parts
@@ -140,7 +129,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are not enough CLAIM body parts in this creep’s body.
     * @note CPU Cost: CONST
     */
-  def attackController(target: Structure): Int = js.native
+  def attackController(target: StructureController): Int = js.native
 
   /**
     * Build a structure at the target construction site using carried energy. Requires WORK and CARRY body parts.
@@ -184,6 +173,7 @@ trait Creep extends RoomObject {
     *         GCLNotEnough - The Global Control Level is not enough.
     * @note CPU Cost: CONST
     */
+
   def claimController(target: Structure): Int = js.native
 
   /**
@@ -216,8 +206,22 @@ trait Creep extends RoomObject {
     *         NotEnoughResources - The creep does not have the given amount of energy.
     * @note CPU Cost: CONST
     */
-  def drop(resourceType: String, amount: Int = ???): Int = js.native
+  def drop(resourceType: String, amount: js.UndefOr[Int]): Int = js.native
 
+  /**
+     * Add one more available safe mode activation to a room controller.
+     *
+     * The creep has to be at adjacent square to the target room controller and have 1000 ghodium resource.
+     * @param target The target room controller.
+     * @returns One of the following codes:
+     * - OK: The operation has been scheduled successfully.
+     * - ERR_NOT_OWNER: You are not the owner of this creep.
+     * - ERR_BUSY: The creep is still being spawned.
+     * - ERR_NOT_ENOUGH_RESOURCES: The creep does not have enough ghodium.
+     * - ERR_INVALID_TARGET: The target is not a valid controller object.
+     * - ERR_NOT_IN_RANGE: The target is too far away.
+     */
+  def generateSafeMode(target: StructureController): Int = js.native
   /**
     * Get the quantity of live body parts of the given type. Fully damaged parts do not count.
     * @param partType A body part type, one of the following body part constants:
@@ -225,7 +229,7 @@ trait Creep extends RoomObject {
     * @return A number representing the quantity of body parts.
     * @note CPU Cost: NONE
     */
-  def getActiveBodyparts(partType: String): Int = js.native
+  def getActiveBodyparts(partType: BodyPartConstant.type): Int = js.native
 
   /**
     * Harvest energy from the source or minerals from the mineral deposit. Requires the WORK body part.
@@ -244,25 +248,8 @@ trait Creep extends RoomObject {
     * @note CPU Cost: CONST
     */
   def harvest(target: Source): Int = js.native
-
-  /**
-    * Harvest energy from the source or minerals from the mineral deposit. Requires the WORK body part.
-    * If the creep has an empty CARRY body part, the harvested resource is put into it; otherwise it is
-    * dropped on the ground. The target has to be at an adjacent square to the creep.
-    * @param target The object to be harvested
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         NotFound - Extractor not found. You must build an extractor structure to harvest minerals.
-    *         NotEnoughResources - The target source does not contain any harvestable energy.
-    *         InvalidTarget - The target is not a valid source object.
-    *         NotInRange - The target is too far away.
-    *         NoBodypart - There are no WORK body parts in this creep’s body.
-    * @note CPU Cost: CONST
-    */
   def harvest(target: Mineral): Int = js.native
-
+  def harvest(target: Deposit): Int = js.native
   /**
     * Heal self or another creep. It will restore the target creep’s damaged body parts function and increase the
     * hits counter. Requires the HEAL body part. The target has to be at adjacent square to the creep.
@@ -287,7 +274,8 @@ trait Creep extends RoomObject {
     *         Busy - The creep is still being spawned.
     *         Tired - The fatigue indicator of the creep is non-zero.
     *         NoBodypart - There are no MOVE body parts in this creep’s body.    */
-  def move(direction: Int): Int = js.native
+  def move(direction: Direction.type): Int = js.native
+  def move(target: Creep): Int = js.native
 
   /**
     * Move the creep one square in the specified direction. Requires the MOVE body part.
@@ -300,21 +288,7 @@ trait Creep extends RoomObject {
     *         InvalidArgs - path is not a valid path array
     *         Tired - The fatigue indicator of the creep is non-zero.
     *         NoBodypart - There are no MOVE body parts in this creep’s body.    */
-  def moveByPath(path: String): Int = js.native
-
-  /**
-    * Move the creep one square in the specified direction. Requires the MOVE body part.
-    * @param path A path value as returned from Room.findPath, RoomPosition.findPathTo, or PathFinder.search methods.
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         NotFound - The specified path doesn't match the creep's location.
-    *         InvalidArgs - path is not a valid path array
-    *         Tired - The fatigue indicator of the creep is non-zero.
-    *         NoBodypart - There are no MOVE body parts in this creep’s body.    */
-  def moveByPath(path: js.Array[PathStep]): Int = js.native
-
+  def moveByPath(path: js.Array[PathStep] | js.Array[RoomPosition] | String): Int = js.native
   /**
     * Find the optimal path to the target within the same room and move to it. A shorthand to
     * consequent calls of pos.findPathTo() and move() methods. If the target is in another room,
@@ -345,7 +319,8 @@ trait Creep extends RoomObject {
     *         NoPath - No path to the target could be found.
     * @note CPU Cost: HIGH
     */
-  def moveTo(x: Int, y: Int, opts: js.Object = ???): Int = js.native
+  @JSName("moveTo")
+  def moveToCord(x: Int, y: Int, opts: Option[MoveTooOpts] = None): Int = js.native
 
   /**
     * Find the optimal path to the target within the same room and move to it. A shorthand to
@@ -363,39 +338,8 @@ trait Creep extends RoomObject {
     *         NoPath - No path to the target could be found.
     * @note CPU Cost: HIGH
     */
-  def moveTo(target: RoomPosition): Int = js.native
-
-  /**
-    * Find the optimal path to the target within the same room and move to it. A shorthand to
-    * consequent calls of pos.findPathTo() and move() methods. If the target is in another room,
-    * then the corresponding exit will be used as a target. Requires the MOVE body part
-    * @param target Can be a RoomPosition object or any object containing RoomPosition.
-    *               The position doesn't have to be in the same room with the creep.
-    * @param opts An object containing additional options:
-    *             reusePath number - This option enables reusing the path found along multiple game ticks. It allows to save CPU time, but can result in a slightly slower creep reaction behavior. The path is stored into the creep's memory to the _move property. The reusePath value defines the amount of ticks which the path should be reused for. The default value is 5. Increase the amount to save more CPU, decrease to make the movement more consistent. Set to 0 if you want to disable path reusing.
-    *             serializeMemory boolean - If reusePath is enabled and this option is set to true, the path will be stored in memory in the short serialized form using Room.serializePath. The default value is true.
-    *             noPathFinding boolean - If this option is set to true, moveTo method will return ERR_NOT_FOUND if there is no memorized path to reuse. This can significantly save CPU time in some cases. The default value is false.
-    *             ignoreCreeps boolean - Treat squares with creeps as walkable. Can be useful with too many moving creeps around or in some other cases. The default value is false.
-    *             ignoreDestructibleStructures boolean - Treat squares with destructible structures (constructed walls, ramparts, spawns, extensions) as walkable. Use this flag when you need to move through a territory blocked by hostile structures. If a creep with an ATTACK body part steps on such a square, it automatically attacks the structure. The default value is false.
-    *             ignoreRoads boolean - Ignore road structures. Enabling this option can speed up the search. The default value is false. This is only used when the new PathFinder is enabled.
-    *             costCallback function(string, CostMatrix) - You can use this callback to modify a CostMatrix for any room during the search. The callback accepts two arguments, roomName and costMatrix. Use the costMatrix instance to make changes to the positions costs. If you return a new matrix from this callback, it will be used instead of the built-in cached one. This option is only used when the new PathFinder is enabled.
-    *             ignore array - An array of the room's objects or RoomPosition objects which should be treated as walkable tiles during the search. This option cannot be used when the new PathFinder is enabled (use costCallback option instead).
-    *             avoid array - An array of the room's objects or RoomPosition objects which should be treated as obstacles during the search. This option cannot be used when the new PathFinder is enabled (use costCallback option instead).
-    *             maxOps number - The maximum limit of possible pathfinding operations. You can limit CPU time used for the search based on ratio 1 op ~ 0.001 CPU. The default value is 2000.
-    *             heuristicWeight number - Weight to apply to the heuristic in the A* formula F = G + weight * H. Use this option only if you understand the underlying A* algorithm mechanics! The default value is 1.2.
-    *             serialize boolean - If true, the result path will be serialized using Room.serializePath. The default is false.
-    *             maxRooms number - The maximum allowed rooms to search. The default (and maximum) is 16. This is only used when the new PathFinder is enabled.
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         Tired - The fatigue indicator of the creep is non-zero.
-    *         NoBodypart - There are no MOVE body parts in this creep’s body.
-    *         InvalidTarget - The target is not a valid creep object.
-    *         NoPath - No path to the target could be found.
-    * @note CPU Cost: HIGH
-    */
-  def moveTo(target: RoomPosition, opts: js.Object): Int = js.native
+  @JSName("moveTo")
+  def moveToPosition(target: RoomPosition | js.Dynamic, opts: Option[js.UndefOr[MoveTooOpts]] = None): Int = js.native
 
   /**
     * Toggle auto notification when the creep is under attack. The notification will be sent to your account email.
@@ -425,20 +369,7 @@ trait Creep extends RoomObject {
     */
   def pickup(target: Resource): Int = js.native
 
-  /**
-    * A ranged attack against another creep or structure. Requires the RANGED_ATTACK body part. If the target is
-    * inside a rampart, the rampart is attacked instead. The target has to be within 3 squares range of the creep.
-    * @param target The target object to be attacked.
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         InvalidTarget - The target is not a valid attackable object.
-    *         NotInRange - The target is too far away.
-    *         NoBodypart - There are no RANGED_ATTACK body parts in this creep’s body.
-    * @note CPU Cost: HIGH
-    */
-  def rangedAttack(target: Creep): Int = js.native
+  def pull(target: Creep): Int = js.native
 
   /**
     * A ranged attack against another creep or structure. Requires the RANGED_ATTACK body part. If the target is
@@ -453,7 +384,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are no RANGED_ATTACK body parts in this creep’s body.
     * @note CPU Cost: HIGH
     */
-  def rangedAttack(target: Structure): Int = js.native
+  def rangedAttack(target: Creep | PowerCreep | Structure): Int = js.native
 
   /**
     * Heal another creep at a distance. It will restore the target creep’s damaged body parts function and increase
@@ -468,7 +399,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are no HEAL body parts in this creep’s body.
     * @note CPU Cost: HIGH
     */
-  def rangedHeal(target: Creep): Int = js.native
+  def rangedHeal(target: Creep | PowerCreep): Int = js.native
 
   /**
     * A ranged attack against all hostile creeps or structures within 3 squares range. Requires the RANGED_ATTACK
@@ -513,7 +444,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are no CLAIM body parts in this creep’s body.
     * @note CPU Cost: CONST
     */
-    def reserveController(target: Structure): Int = js.native
+    def reserveController(target: StructureController): Int = js.native
 
   /**
     * Display a visual speech balloon above the creep with the specified message. The message will disappear
@@ -525,7 +456,7 @@ trait Creep extends RoomObject {
     *         Busy - The creep is still being spawned.
     * @note CPU Cost: CONST
     */
-    def say(message: String): Int = js.native
+    def say(message: String, toPublic: Option[Boolean] = None): Int = js.native
 
   /**
     * Kill the creep immediately.
@@ -553,42 +484,7 @@ trait Creep extends RoomObject {
     *         InvalidArgs - The resources amount is incorrect.
     * @note CPU Cost: CONST
     */
-  def transfer(target: Creep, resourceType: String, amount: Int = ???): Int = js.native
-
-  /**
-    * Transfer resource from the creep to another object. The target has to be at adjacent square to the creep.
-    * @param target The target object.
-    * @param resourceType One of the RESOURCE_* constants.
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         NotEnoughResources - The creep does not have the given amount of resources.
-    *         InvalidTarget - The target is not a valid object which can contain the specified resource.
-    *         Full - The target cannot receive any more resources.
-    *         NotInRange - The target is too far away.
-    *         InvalidArgs - The resources amount is incorrect.
-    * @note CPU Cost: CONST
-    */
-  def transfer(target: Structure, resourceType: String): Int = js.native
-
-  /**
-    * Transfer resource from the creep to another object. The target has to be at adjacent square to the creep.
-    * @param target The target object.
-    * @param resourceType One of the RESOURCE_* constants.
-    * @param amount The amount of resources to be transferred. If omitted, all the available carried amount is used.
-    * @return One of the following codes:
-    *         OK - The operation has been scheduled successfully.
-    *         NotOwner - You are not the owner of this creep.
-    *         Busy - The creep is still being spawned.
-    *         NotEnoughResources - The creep does not have the given amount of resources.
-    *         InvalidTarget - The target is not a valid object which can contain the specified resource.
-    *         Full - The target cannot receive any more resources.
-    *         NotInRange - The target is too far away.
-    *         InvalidArgs - The resources amount is incorrect.
-    * @note CPU Cost: CONST
-    */
-  def transfer(target: Structure, resourceType: String, amount: Int): Int = js.native
+  def transfer(target: Creep | PowerCreep | Structure, resourceType: String, amount: Option[Int] = None): Int = js.native
 
   /**
     * Upgrade your controller to the next level using carried energy. Upgrading controllers raises your Global Control
@@ -609,7 +505,7 @@ trait Creep extends RoomObject {
     *         NoBodypart - There are no WORK body parts in this creep’s body.
     * @note CPU Cost: CONST
     */
-  def upgradeController(target: Structure): Int = js.native
+  def upgradeController(target: StructureController): Int = js.native
 
   /**
     * Withdraw resources from a structure. The target has to be at adjacent square to the creep. Multiple creeps can
@@ -629,6 +525,6 @@ trait Creep extends RoomObject {
     *         InvalidArgs - The resource amount or type is incorrect
     * @note CPU Cost: CONST
     */
-  def withdraw(target: Structure, resourceType: String, amount: Int): Int = js.native
+  def withdraw(target: Structure | Tombstone | Ruin, resourceType: String, amount: Option[Int] = None): Int = js.native
 
 }
