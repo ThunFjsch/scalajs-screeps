@@ -1,10 +1,11 @@
-package tutorial.webapp
+package screepsBot
 
 import screepsTypes._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.scalajs.js.Dynamic.{global => g}
+import screepsTypes.{OwnedStructureWithStorage, Creep, Memory, FindType, StructureConstant, ResourceType, StructureTower, Game, Structure, ConstructionSite, Errors, Source}
 
 object screeps {
   def main(args: Array[String]): Unit = {
