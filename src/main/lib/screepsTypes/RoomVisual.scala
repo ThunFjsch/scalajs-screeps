@@ -114,7 +114,8 @@ trait RoomVisual extends js.Object{
      * Returns a compact representation of all visuals added in the room in the current tick.
      * @returns A string with visuals data. There's not much you can do with the string besides store them for later.
      */
-    def export(): String = js.native
+    @JSName("export")
+    def handOut(): String = js.native
     /**
      * Add previously exported (with {@link RoomVisual.export}) room visuals to the room visual data of the current tick.
      * @param data The string returned from `RoomVisual.export`.

@@ -165,8 +165,8 @@ object Game extends js.Object {
     * System game tick counter. It is automatically incremented on every tick.
     *
     * {code}console.log(Game.time);{code}
-    */
-  valid time: Int = js.native
+    */  
+  val time: Int = js.native
 
   /**
     * Get an object with the specified unique ID. It may be a game object of any type. Only objects from the rooms which are visible to you can be accessed.
