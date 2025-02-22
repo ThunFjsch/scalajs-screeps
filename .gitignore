@@ -13,6 +13,11 @@ target/
 *.metals*
 .vscode
 
+# Grunt required files
+*node_modules/*
+.screeps.json
+package-lock.json
+
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
