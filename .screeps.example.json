@@ -1,7 +1,7 @@
 {
     "email": "your-email",
     "password": "your-password",
-    "toke": "your-toke",
+    "token": "your-toke",
     "branch": "default",
     "ptr": false
 }
