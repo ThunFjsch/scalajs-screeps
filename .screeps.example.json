@@ -1,7 +1,19 @@
 {
-    "email": "your-email",
-    "password": "your-password",
-    "token": "your-toke",
-    "branch": "default",
-    "ptr": false
+    "user": {
+        "email": "your-email",
+        "password": "your-password",
+        "toke": "your-toke",
+        "branch": "default",
+        "ptr": false
+    },
+    "server": {
+        "host": "server-host",
+        "port": "number",
+        "http": "boolean"
+    },
+    "newbieland": {
+        "host": "screeps.newbieland.net",
+        "port": 21025,
+        "http": true
+    }
 }
