@@ -43,7 +43,7 @@ trait Room extends js.Object {
   * A shorthand to `Memory.rooms[room.name]`. You can use it for quick access the room’s specific memory data object.
   */
   // TODO: Add type for Memory segments, Room/Creep/.../
-  val memory: js.Dynamic = js.native
+  val memory: RoomMemory = js.native
   /** The name of the room. */
   val name: String = js.native
   /** The {@link StructureStorage} of this room, if present, otherwise undefined. */

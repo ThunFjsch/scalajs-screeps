@@ -6,7 +6,7 @@ module.exports = function(grunt) {
             options: {
                 email: config.user.email,
                 password: config.user.password,
-                token: config.user.token,
+                // token: config.user.token, // When using a token uncomment this
                 branch: 'default',
                 server: {
                     host: config.server.host,

@@ -26,7 +26,7 @@ trait PowerCreep extends js.Object{
     val hitsMax: Int = js.native
     val id: String = js.native
     val level: Int = js.native
-    val memory: js.Dynamic = js.native
+    val memory: PowerCreepMemory = js.native
     val my: Boolean = js.native
     val name: String = js.native
     val owner: Owner = js.native

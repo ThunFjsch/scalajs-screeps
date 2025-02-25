@@ -43,7 +43,7 @@ trait StructureSpawn extends OwnedStructureWithStorage {
   /** A shorthand to Memory.spawns[spawn.name]. You can use it for quick access the spawn’s specific memory data object.
     * [[http://support.screepsTypes.com/hc/en-us/articles/203016642-Working-with-memory Learn more about memory]]
     */
-  val memory: js.Any = js.native
+  val memory: SpawnMemory = js.native
 
   /**
     * Spawn’s name. You choose the name upon creating a new spawn, and it cannot be changed later.

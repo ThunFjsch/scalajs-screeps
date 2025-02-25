@@ -29,7 +29,7 @@ object screeps {
         case "builder"   => builder(creep)
         case unknown     => g.console.log("unknown role: " + unknown)
       }
-    })
+    cleanMemory()
 
     Game.structures.values.filter(_.structureType == StructureConstant.Tower.toString).map(_.asInstanceOf[StructureTower]).foreach(tower)
   }
@@ -37,7 +37,7 @@ object screeps {
   def numOfHarvesters(creeps: Iterable[Creep]) =
     creeps.filter(_.memory.role.asInstanceOf[String] == "harvester").size
 
-   def cleanMemory() = {
+   def cleanMemory(): Unit = {
      Memory.creeps.keys.filterNot(Game.creeps.contains).foreach { name: String =>
        g.console.log("Recycling memories of " + name)
        g.console.log(Memory.creeps)

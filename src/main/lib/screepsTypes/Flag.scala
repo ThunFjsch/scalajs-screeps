@@ -10,7 +10,7 @@ trait Flag extends RoomObject {
   val color: Color.type = js.native
 
   /** A shorthand to Memory.flags[flag.name]. You can use it for quick access the flag's specific memory data object. */
-  val memory: js.Any = js.native
+  val memory: FlagMemory = js.native
 
   /**
     * Flag’s name. You can choose the name while creating a new flag, and it cannot be changed later.
