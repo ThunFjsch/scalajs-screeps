@@ -1,6 +1,7 @@
 package screepsTypes
 
 import scala.scalajs.js
+import scala.scalajs.js.|
 
 /**
   * If the spawn is in process of spawning a new creep, this object will contain the new creep’s information.
@@ -93,7 +94,7 @@ trait StructureSpawn extends OwnedStructureWithStorage {
     *         RCLNotEnough - The Room Controller Level is not enough.
     * @note CPU Cost: CONST
     */
-  def createCreep(body: js.Array[String], name: String = "", memory: js.Any = ???): Either[Short, String] = js.native
+  def createCreep(body: js.Array[String], name: String = "", memory: js.Any = ???): Short | String = js.native
   def spawnCreep(body: js.Array[String], name: String, otps: Option[SpawnOptions]): Short
   /**
     * Kill the creep and drop up to 100% of resources spent on its spawning and boosting depending

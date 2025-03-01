@@ -27,7 +27,10 @@ object MemoryHack{
     }
 
     def runHack(): Unit = {
-        js.Dynamic.global.Memory = memory
+        for ((key, value) <- memory.asInstanceOf[js.Dictionary[Memory]]) {
+            js.Dynamic.global.Memory.updateDynamic(key)(value)
+        }
         RawMemory._parsed = memory
     }
+
 }

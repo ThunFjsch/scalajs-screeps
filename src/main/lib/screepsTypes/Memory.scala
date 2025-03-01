@@ -4,20 +4,20 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
 @js.native
-@JSGlobal
+@JSGlobalScope
 object Memory extends Memory
 
 @js.native
 trait Memory extends js.Object {
-  val creeps: js.Dictionary[CreepMemory]= js.native
-  val spawns: js.Dictionary[SpawnMemory] = js.native
-  val rooms:  js.Dictionary[RoomMemory] = js.native
-  val powerCreeps:  js.Dictionary[PowerCreepMemory] = js.native
-  val flags:  js.Dictionary[FlagMemory] = js.native
+  var creeps: js.Dictionary[CreepMemory]= js.native
+  var spawns: js.Dictionary[SpawnMemory] = js.native
+  var rooms:  js.Dictionary[RoomMemory] = js.native
+  var powerCreeps:  js.Dictionary[PowerCreepMemory] = js.native
+  var flags:  js.Dictionary[FlagMemory] = js.native
 }
 @js.native
 trait CreepMemory extends js.Object{
-  val role: String = js.native
+  var role: String = js.native
   var state: js.UndefOr[Boolean] = js.native
 }
 @js.native
