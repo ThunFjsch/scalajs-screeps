@@ -7,24 +7,49 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js.Dynamic.{global => g}
 import js.special.delete
 
-object screeps {
-  def main(args: Array[String]): Unit = {
-    MemoryHack.register()
-    loop
+// object Setup {
+//   @JSExportTopLevel("main")
+//   def runSetup(): Unit = {
+//   }
+// }
+
+object Screeps {
+  MemoryHack.register()
+  
+  var cache = Cache
+  if(cache.ownedRooms != js.Dictionary.empty){
+    Game.rooms.asInstanceOf[js.Dictionary[Room]].map(room =>  {
+      if(js.typeOf(room) != "undefined" && room._2.controller.my){
+        cache.ownedRooms.addOne(room._1, room._2.memory)
+      }
+    })
+  }
+  cache.ownedRooms.foreach(o => g.console.log(o._1))
+  
+  if(js.isUndefined(js.Dynamic.global.Memory.rooms.asInstanceOf[js.Dictionary[RoomMemory]])){
+  js.Dynamic.global.Memory.rooms = js.Dictionary.empty
+  }
+  if(js.isUndefined(js.Dynamic.global.Memory.creeps.asInstanceOf[js.Dictionary[CreepMemory]])){
+    js.Dynamic.global.Memory.creeps = js.Dictionary.empty
+  }
+  if(js.isUndefined(js.Dynamic.global.Memory.spawns.asInstanceOf[js.Dictionary[CreepMemory]])){
+    js.Dynamic.global.Memory.spawns = js.Dictionary.empty
   }
 
-  @JSExport
-  def loop = {
+  @JSExportTopLevel("loop")
+  def loop(): Unit = {
+
     MemoryHack.runHack()
+    cache.ownedRooms.foreach(room => {g.console.log(room._1)})
     
     val num = numOfRole(Game.creeps.values, "harvester")
     // g.console.log("Harvesters: " + num)
     val numOfUpgrader: Int = numOfRole(Game.creeps.values, "upgrader")
     // g.console.log("Upgraders: " + numOfUpgrader)
-    if (num < 2 && Game.spawns("Spawn1").spawning == null) {
+    if (num < 2 && Game.spawns("Spawn1").spawning == null && Game.time % 3 == 1) {
       val newName = Game.spawns("Spawn1").createCreep(js.Array("work", "carry", "move"), "", new js.Object{ val role = "harvester"; val state = false})
       g.console.log("Spawning new harvester: " + newName)
-    } else if(numOfUpgrader < 4 && Game.spawns("Spawn1").spawning == null){
+    } else if(numOfUpgrader < 4 && Game.spawns("Spawn1").spawning == null && Game.time % 3 == 1){
       val newName = Game.spawns("Spawn1").createCreep(js.Array("work", "carry", "move"), "", new js.Object{ val role = "upgrader"; val state = false})
       g.console.log("Spawning new upgrader: " + newName)
     }

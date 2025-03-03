@@ -11,5 +11,4 @@ ThisBuild / scmInfo := Some(ScmInfo(
         "scm:git:git@github.com:jeckhart/scalajs-screeps.git",
         Some("scm:git:git@github.com:jeckhart/scalajs-screeps.git")))
 
-// This is an application with a main method
-scalaJSUseMainModuleInitializer := true
+scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }

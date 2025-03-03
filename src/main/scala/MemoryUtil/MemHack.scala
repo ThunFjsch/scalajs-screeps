@@ -18,19 +18,23 @@ package screepsBot
 
 import screepsTypes._
 import scala.scalajs.js
+import js.special.delete
+import screepsBot.Screeps.cache
+import screepsTypes.Game.creeps
+
 
 object MemoryHack{
-    var memory: js.Dynamic = null
+    // @js.annotation.JSExportTopLevel("cachedMemory")
+    var cachedMemory: js.Dynamic = null
     def register(): Unit = {
-       memory = js.Dynamic.global.Memory
-       memory = RawMemory._parsed
+        this.cachedMemory = js.Dynamic.global.Memory
+        this.cachedMemory = RawMemory._parsed   
     }
 
     def runHack(): Unit = {
-        for ((key, value) <- memory.asInstanceOf[js.Dictionary[Memory]]) {
+        for ((key, value) <- cachedMemory.asInstanceOf[js.Dictionary[Memory]]) {
             js.Dynamic.global.Memory.updateDynamic(key)(value)
         }
-        RawMemory._parsed = memory
+        RawMemory._parsed = js.JSON.parse(js.JSON.stringify(cachedMemory))
     }
-
 }

@@ -7,14 +7,15 @@ import scala.scalajs.js.Dynamic.{global => g}
 
 object Creeps{
     def run(creeps: js.Dictionary[Creep]): Unit = {
-        creeps.values.map( creep => {
-            creep.memory.role.asInstanceOf[String] match {
-                case "harvester" => harvester(creep)
-                case "upgrader"  => upgrader(creep)
-                case "builder"   => builder(creep)
-                case unknown     => g.console.log("unknown role: " + unknown)
-            }
-        })
+      // creeps.foreach(creep => g.console.log(js.JSON.stringify(creep._2.memory)))
+      creeps.values.map( creep => {
+          creep.memory.role.toString() match {
+              case "harvester" => harvester(creep)
+              case "upgrader"  => upgrader(creep)
+              case "builder"   => builder(creep)
+              case unknown     => g.console.log("unknown role: " + unknown)
+          }
+      })
     }
 
   def harvester(creep: Creep) = {
